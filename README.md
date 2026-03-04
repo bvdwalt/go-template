@@ -20,10 +20,41 @@ A GitHub template repository for Go projects, pre-configured with:
    ```bash
    ./init.sh mytool bvdwalt github.com/bvdwalt/mytool "A tool that does things"
    ```
-4. Add the required secrets to your repo (Settings → Secrets → Actions):
-   - `GH_PAT` — Personal Access Token with Contents write access (triggers release from auto-tag)
-   - `HOMEBREW_TAP_GITHUB_TOKEN` — PAT with Contents write access to your `homebrew-tap` repo
+4. Add the required secrets — see [Secrets setup](#secrets-setup) below
 5. Start coding in `cmd/<app-name>/main.go`
+
+## Secrets setup
+
+Two PATs are required. Create them at **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**.
+
+### `GH_PAT`
+
+This allows the auto-tag workflow to push tags in a way that triggers the release workflow. GitHub's default `GITHUB_TOKEN` intentionally cannot trigger other workflows, so a real PAT is needed.
+
+- **Resource owner:** your GitHub account
+- **Repository access:** only the new repo (e.g. `mynewapp`)
+- **Permissions:** Contents → Read and write
+
+Add it to the repo at **Settings → Secrets and variables → Actions → New repository secret**, named `GH_PAT`.
+
+> This secret must be added per repo each time you use this template.
+
+### `HOMEBREW_TAP_GITHUB_TOKEN`
+
+This allows GoReleaser to push the updated Homebrew cask to your tap repo after a release.
+
+- **Resource owner:** your GitHub account
+- **Repository access:** only `homebrew-tap`
+- **Permissions:** Contents → Read and write
+
+Add it to the repo at **Settings → Secrets and variables → Actions → New repository secret**, named `HOMEBREW_TAP_GITHUB_TOKEN`.
+
+> If you already have this secret from another project, you still need to add it here — secrets are per repo.
+
+### Prerequisites before first release
+
+- Your `<github-owner>/homebrew-tap` repo must exist (can be empty). GoReleaser will fail if it doesn't.
+- The `LICENSE` file is included in release archives — update the copyright year/name if needed.
 
 ## Versioning
 

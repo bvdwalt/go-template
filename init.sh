@@ -7,6 +7,7 @@ APP_NAME="${1:?Usage: ./init.sh <app-name> <github-owner> <module-path> <descrip
 GITHUB_OWNER="${2:?Missing github-owner}"
 MODULE_PATH="${3:?Missing module-path}"
 APP_DESCRIPTION="${4:?Missing description}"
+YEAR=$(date +%Y)
 
 echo "Initializing project: $APP_NAME"
 
@@ -22,6 +23,7 @@ find . -not -path './.git/*' -type f \( \
         -e "s|GITHUB_OWNER|$GITHUB_OWNER|g" \
         -e "s|MODULE_PATH|$MODULE_PATH|g" \
         -e "s|APP_DESCRIPTION|$APP_DESCRIPTION|g" \
+        -e "s|YEAR|$YEAR|g" \
         "$file"
 done
 
