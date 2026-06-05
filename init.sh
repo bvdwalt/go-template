@@ -16,7 +16,8 @@ find . -not -path './.git/*' -type f \( \
     -name "*.yaml" -o -name "*.yml" -o \
     -name "go.mod" -o -name "justfile" -o \
     -name "*.go" -o -name "*.md" -o \
-    -name ".gitignore" \
+    -name ".gitignore" -o \
+    -name "Dockerfile*" \
 \) | while read -r file; do
     sed -i '' \
         -e "s|APP_NAME|$APP_NAME|g" \
@@ -36,6 +37,19 @@ fi
 rm -- "$0"
 
 echo "Done. Next steps:"
-echo "  1. Add secrets to the repo: GH_PAT, HOMEBREW_TAP_GITHUB_TOKEN"
+echo "  1. Add secrets to the repo (Settings → Secrets and variables → Actions):"
+echo ""
+echo "       GH_PAT"
+echo "         Fine-grained token — repo: this repo only"
+echo "         Permission: Contents → Read and write"
+echo "         (needed so auto-tag can push tags that trigger the release workflow)"
+echo ""
+echo "       HOMEBREW_TAP_GITHUB_TOKEN  (CLI tools only)"
+echo "         Fine-grained token — repo: homebrew-tap only"
+echo "         Permission: Contents → Read and write"
+echo ""
+echo "       DOCKERHUB_USERNAME   — Docker Hub username"
+echo "       DOCKERHUB_TOKEN      — Docker Hub access token (Account Settings → Security)"
+echo ""
 echo "  2. Start coding in cmd/$APP_NAME/main.go"
 echo "  3. Commit with conventional commits (feat:, fix:) to trigger auto-versioning"

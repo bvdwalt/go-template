@@ -13,6 +13,12 @@ run: build
     @echo "Running {{BINARY_NAME}}..."
     @{{BINARY_PATH}}
 
+docker:
+    @docker build -t {{BINARY_NAME}} .
+
+docker-run: docker
+    @docker run --rm -p 8080:8080 {{BINARY_NAME}}
+
 install: build
     @echo "Installing {{BINARY_NAME}} to /usr/local/bin..."
     @sudo cp {{BINARY_PATH}} /usr/local/bin/{{BINARY_NAME}}
