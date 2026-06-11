@@ -3,6 +3,7 @@
 A GitHub template repository for Go projects, pre-configured with:
 
 - **GoReleaser** — cross-platform builds (macOS, Linux, Windows) and GitHub releases
+- **Docker** — multi-platform images published to Docker Hub and GHCR on every release
 - **Homebrew tap** — automatic formula updates on release
 - **Auto-tagging** — conventional commits drive version bumps via `svu`
 - **justfile** — common development commands
@@ -50,6 +51,14 @@ This allows GoReleaser to push the updated Homebrew cask to your tap repo after 
 Add it to the repo at **Settings → Secrets and variables → Actions → New repository secret**, named `HOMEBREW_TAP_GITHUB_TOKEN`.
 
 > If you already have this secret from another project, you still need to add it here — secrets are per repo.
+
+### `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`
+
+Required for GoReleaser to push images to Docker Hub. Create an access token at **Docker Hub → Account Settings → Security**.
+
+Add both to the repo at **Settings → Secrets and variables → Actions**.
+
+> If you don't need Docker image publishing, remove the `dockers_v2` section from `.goreleaser.yaml` and the Docker steps from `release.yml`. GHCR publishing uses `GITHUB_TOKEN` automatically — no extra secret needed.
 
 ### Prerequisites before first release
 
