@@ -40,6 +40,29 @@ homebrew_casks:
 checksum:
   name_template: checksums.txt
 
+dockers_v2:
+  - id: dockerhub
+    images:
+      - "DOCKERHUB_USERNAME/APP_NAME"
+    tags:
+      - "{{ .Version }}"
+      - latest
+    dockerfile: Dockerfile.goreleaser
+    platforms:
+      - linux/amd64
+      - linux/arm64
+
+  - id: ghcr
+    images:
+      - "ghcr.io/GITHUB_OWNER/APP_NAME"
+    tags:
+      - "{{ .Version }}"
+      - latest
+    dockerfile: Dockerfile.goreleaser
+    platforms:
+      - linux/amd64
+      - linux/arm64
+
 release:
   github:
     owner: GITHUB_OWNER
