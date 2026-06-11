@@ -39,8 +39,20 @@ homebrew_casks:
 
 # Docker — remove this section if not publishing a Docker image
 dockers_v2:
-  - images:
+  - id: dockerhub
+    images:
       - "{{ .Env.DOCKERHUB_USERNAME }}/APP_NAME"
+    tags:
+      - "{{ .Version }}"
+      - latest
+    dockerfile: Dockerfile.goreleaser
+    platforms:
+      - linux/amd64
+      - linux/arm64
+
+  - id: ghcr
+    images:
+      - "ghcr.io/GITHUB_OWNER/APP_NAME"
     tags:
       - "{{ .Version }}"
       - latest
