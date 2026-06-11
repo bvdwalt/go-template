@@ -37,13 +37,11 @@ homebrew_casks:
     description: "APP_DESCRIPTION"
     license: "MIT"
 
-checksum:
-  name_template: checksums.txt
-
+# Docker — remove this section if not publishing a Docker image
 dockers_v2:
   - id: dockerhub
     images:
-      - "DOCKERHUB_USERNAME/APP_NAME"
+      - "{{ .Env.DOCKERHUB_USERNAME }}/APP_NAME"
     tags:
       - "{{ .Version }}"
       - latest
@@ -62,6 +60,9 @@ dockers_v2:
     platforms:
       - linux/amd64
       - linux/arm64
+
+checksum:
+  name_template: checksums.txt
 
 release:
   github:
