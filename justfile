@@ -4,10 +4,30 @@ CMD_PATH := "./cmd/" + BINARY_NAME
 VERSION := `git describe --tags --always --dirty 2>/dev/null || echo "dev"`
 BUILD_FLAGS := "-ldflags \"-X main.version=" + VERSION + "\""
 
-build:
+build: web-build
     @echo "Building {{BINARY_NAME}}..."
     @go build {{BUILD_FLAGS}} -o {{BINARY_PATH}} {{CMD_PATH}}
     @echo "Build complete: {{BINARY_PATH}}"
+
+# Install frontend dependencies (no-op if there's no web/ directory)
+web-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -d web ]; then
+        cd web && npm install
+    fi
+
+# Build the frontend into web/dist (no-op if there's no web/ directory)
+web-build: web-install
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -d web ]; then
+        cd web && npm run build
+    fi
+
+# Run the frontend dev server (proxies /api and /health to :8080)
+web-dev:
+    @cd web && npm run dev
 
 run: build
     @echo "Running {{BINARY_NAME}}..."

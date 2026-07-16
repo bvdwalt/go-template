@@ -3,3 +3,7 @@
 /dist/
 /coverage.out
 /coverage.html
+
+web/node_modules/
+web/dist/*
+!web/dist/.gitkeep

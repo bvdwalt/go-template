@@ -7,6 +7,7 @@ A GitHub template repository for Go projects, pre-configured with:
 - **Homebrew tap** — automatic formula updates on release
 - **Auto-tagging** — conventional commits drive version bumps via `svu`
 - **justfile** — common development commands
+- **Web app scaffold** (opt-in) — chi backend + Svelte/Vite frontend embedded into a single binary via `go:embed`, plus an opt-in SQLite data layer. Delete what you don't need — see [Web app scaffold](#web-app-scaffold).
 
 ## Using this template
 
@@ -65,6 +66,22 @@ Add both to the repo at **Settings → Secrets and variables → Actions**.
 - Your `<github-owner>/homebrew-tap` repo must exist (can be empty). GoReleaser will fail if it doesn't.
 - The `LICENSE` file is included in release archives — update the copyright year/name if needed.
 
+## Web app scaffold
+
+The template includes an opt-in pattern for apps that serve a browser frontend, matching the structure used by [overdrive](https://github.com/bvdwalt/overdrive) and [zwoop](https://github.com/Zwoop-Labs/zwoop):
+
+- `internal/server/` — [chi](https://github.com/go-chi/chi) router with a `/health` endpoint and an SPA static-file handler (with cache headers for hashed assets and index.html fallback for client-side routes).
+- `web/` — Svelte + Vite + TypeScript frontend. `web/embed.go` uses `//go:embed all:dist` to compile the built frontend directly into the Go binary — one binary, no separate static-file server needed.
+- `internal/config/` — env-var config (`PORT`, `DB_PATH`).
+- `internal/db/` — opt-in SQLite data layer: plain `database/sql` + [modernc.org/sqlite](https://gitlab.com/cznic/sqlite) (pure Go, no cgo), with a minimal embedded-migration runner (`internal/db/migrate.go` applies `internal/db/migrations/*.sql` in order, tracked in a `schema_migrations` table). No ORM — write your own queries. Not wired into `main.go` by default; call `db.Connect(cfg.DBPath)` when you need persistence.
+- `Dockerfile` — three-stage build (Node builds the frontend → Go compiles the binary with the frontend embedded → Alpine runtime). `Dockerfile.goreleaser` stays as-is; the release workflow builds the frontend before GoReleaser cross-compiles, so `web/dist` is already populated when `go:embed` runs.
+
+Local commands: `just web-dev` (Vite dev server, proxies `/api` and `/health` to `:8080`), `just web-build` (build frontend into `web/dist`), `just build` (builds frontend then the Go binary — no-ops the frontend step if `web/` doesn't exist).
+
+**Building a CLI-only tool instead?** Delete `web/` and `internal/server/`, revert `cmd/<app-name>/main.go` to a plain `func main() {}`, and drop the `Dockerfile` if you don't need a container image. The CI and release workflows skip the frontend build steps automatically when `web/package.json` is absent, so no workflow edits are required.
+
+**Don't need persistence?** Delete `internal/db/`, then remove the `modernc.org/sqlite` require from `go.mod` and run `go mod tidy`.
+
 ## Versioning
 
 Commits to `main` are automatically tagged using [svu](https://github.com/caarlos0/svu) based on [conventional commits](https://www.conventionalcommits.org/):
@@ -96,3 +113,4 @@ just release        # Tag and push to trigger a release
 - [just](https://github.com/casey/just) — `brew install just`
 - [svu](https://github.com/caarlos0/svu) — `go install github.com/caarlos0/svu/v3@latest` (for `just version/tag/release`)
 - [golangci-lint](https://golangci-lint.run/) — `brew install golangci-lint` (optional, for `just lint`)
+- [Node.js](https://nodejs.org/) 20+ — only needed if keeping the `web/` frontend scaffold

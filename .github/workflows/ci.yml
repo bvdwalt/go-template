@@ -21,6 +21,18 @@ jobs:
       - name: Install just
         uses: extractions/setup-just@v2
 
+      - name: Set up Node
+        if: hashFiles('web/package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build frontend
+        if: hashFiles('web/package.json') != ''
+        run: cd web && npm install && npm run build
+
       - name: Install dependencies
         run: go mod download
 
