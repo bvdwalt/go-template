@@ -12,12 +12,14 @@ YEAR=$(date +%Y)
 echo "Initializing project: $APP_NAME"
 
 # Replace placeholders in files
-find . -not -path './.git/*' -type f \( \
+find . -not -path './.git/*' -not -path './web/node_modules/*' -not -path './web/dist/*' -type f \( \
     -name "*.yaml" -o -name "*.yml" -o \
     -name "go.mod" -o -name "justfile" -o \
     -name "*.go" -o -name "*.md" -o \
     -name ".gitignore" -o \
-    -name "Dockerfile*" \
+    -name "Dockerfile*" -o \
+    -name "*.ts" -o -name "*.svelte" -o -name "*.js" -o \
+    -name "*.json" -o -name "*.html" -o -name "*.css" \
 \) | while read -r file; do
     sed -i '' \
         -e "s|APP_NAME|$APP_NAME|g" \
@@ -53,3 +55,10 @@ echo "       DOCKERHUB_TOKEN      — Docker Hub access token (Account Settings 
 echo ""
 echo "  2. Start coding in cmd/$APP_NAME/main.go"
 echo "  3. Commit with conventional commits (feat:, fix:) to trigger auto-versioning"
+echo ""
+echo "  Web app scaffold included (chi + Svelte/Vite frontend embedded via go:embed):"
+echo "    - Run 'just web-dev' for the frontend dev server, 'just build' builds both."
+echo "    - Not building a web app? Delete web/, internal/server/, and revert"
+echo "      cmd/$APP_NAME/main.go to a plain func main() {}."
+echo "    - Don't need persistence? Delete internal/db/ and the modernc.org/sqlite"
+echo "      require in go.mod, then run 'go mod tidy'."
