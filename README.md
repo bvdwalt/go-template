@@ -27,19 +27,7 @@ A GitHub template repository for Go projects, pre-configured with:
 
 ## Secrets setup
 
-Two PATs are required. Create them at **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**.
-
-### `GH_PAT`
-
-This allows the auto-tag workflow to push tags in a way that triggers the release workflow. GitHub's default `GITHUB_TOKEN` intentionally cannot trigger other workflows, so a real PAT is needed.
-
-- **Resource owner:** your GitHub account
-- **Repository access:** only the new repo (e.g. `mynewapp`)
-- **Permissions:** Contents → Read and write
-
-Add it to the repo at **Settings → Secrets and variables → Actions → New repository secret**, named `GH_PAT`.
-
-> This secret must be added per repo each time you use this template.
+One PAT is required. Create it at **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**.
 
 ### `HOMEBREW_TAP_GITHUB_TOKEN`
 
@@ -84,13 +72,13 @@ Local commands: `just web-dev` (Vite dev server, proxies `/api` and `/health` to
 
 ## Versioning
 
-Commits to `main` are automatically tagged using [svu](https://github.com/caarlos0/svu) based on [conventional commits](https://www.conventionalcommits.org/):
+After CI passes on `main`, the release workflow tags the next version using [svu](https://github.com/caarlos0/svu) based on [conventional commits](https://www.conventionalcommits.org/) and runs GoReleaser in the same job, so no extra token is needed. If a release fails, re-run the **Release** workflow manually (Actions → Release → Run workflow) to publish the latest tag again.
 
 | Prefix | Bump |
 |--------|------|
 | `fix:` | patch (0.0.x) |
 | `feat:` | minor (0.x.0) |
-| `feat!:` / `BREAKING CHANGE:` | major (x.0.0) |
+| `feat!:` / `BREAKING CHANGE:` | minor while the major version is 0 (`svu --v0`); tag `v1.0.0` by hand when ready |
 | `chore:`, `docs:`, etc. | no bump |
 
 ## Local commands
@@ -105,12 +93,11 @@ just lint           # Run golangci-lint
 just clean          # Remove build artifacts
 just version        # Show current and next version
 just tag            # Create version tag locally
-just release        # Tag and push to trigger a release
 ```
 
 ## Prerequisites
 
 - [just](https://github.com/casey/just) — `brew install just`
-- [svu](https://github.com/caarlos0/svu) — `go install github.com/caarlos0/svu/v3@latest` (for `just version/tag/release`)
+- [svu](https://github.com/caarlos0/svu) — `go install github.com/caarlos0/svu/v3@v3.4.0` (for `just version/tag`)
 - [golangci-lint](https://golangci-lint.run/) — `brew install golangci-lint` (optional, for `just lint`)
 - [Node.js](https://nodejs.org/) 20+ — only needed if keeping the `web/` frontend scaffold
