@@ -44,3 +44,6 @@ jobs:
 
       - name: Test
         run: just test
+
+      - name: Check web/dist placeholder is tracked # goreleaser refuses an untracked web/dist
+        run: git ls-files --error-unmatch web/dist/.gitkeep
