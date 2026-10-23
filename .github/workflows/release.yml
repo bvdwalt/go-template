@@ -68,7 +68,8 @@ jobs:
 
       - name: Build frontend
         if: steps.tag.outputs.tag != '' && hashFiles('web/package.json') != ''
-        run: cd web && npm install && npm run build
+        # vite empties web/dist, so restore the tracked placeholder or goreleaser sees a dirty tree
+        run: cd web && npm install && npm run build && touch dist/.gitkeep
 
       - name: Set up Docker Buildx
         if: steps.tag.outputs.tag != ''
