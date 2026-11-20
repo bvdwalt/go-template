@@ -98,6 +98,6 @@ just tag            # Create version tag locally
 ## Prerequisites
 
 - [just](https://github.com/casey/just) — `brew install just`
-- [svu](https://github.com/caarlos0/svu) — `go install github.com/caarlos0/svu/v3@v3.4.0` (for `just version/tag`)
+- [svu](https://github.com/caarlos0/svu) — `go install github.com/caarlos0/svu/v3@v3.4.4` (for `just version/tag`)
 - [golangci-lint](https://golangci-lint.run/) — `brew install golangci-lint` (optional, for `just lint`)
 - [Node.js](https://nodejs.org/) 20+ — only needed if keeping the `web/` frontend scaffold
