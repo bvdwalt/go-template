@@ -22,23 +22,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: 'stable'
 
       - name: Install svu
-        run: go install github.com/caarlos0/svu/v3@v3.4.0
+        run: go install github.com/caarlos0/svu/v3@v3.4.4
 
       - name: Update version preview comments
         env:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
-          SVU_FLAGS: --v0 # keep in sync with release.yml
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -63,7 +62,7 @@ jobs:
             merge_line=""
             if [ "$allow_merge" = true ]; then
               if git merge -q --no-ff --no-edit "$head" > /dev/null 2>&1; then
-                merge_line=$(bump "$current" "$(svu next $SVU_FLAGS)")
+                merge_line=$(bump "$current" "$(svu next --v0)")
               else
                 git merge --abort
                 merge_line="unavailable (conflicts with main)"
@@ -81,7 +80,7 @@ jobs:
                 msg=$title
               fi
               git commit -q --allow-empty -m "$msg"
-              squash_line=$(bump "$current" "$(svu next $SVU_FLAGS)")
+              squash_line=$(bump "$current" "$(svu next --v0)")
               git checkout -q --detach origin/main
             fi
 
